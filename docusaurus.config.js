@@ -2,11 +2,13 @@
 module.exports = {
   title: 'ERP Docs', // titlul site-ului
   tagline: 'Manual ERP multilingv',
-  url: 'http://localhost:3001', // URL-ul site-ului, pentru dev poate fi localhost
-  baseUrl: '/', // root path al site-ului
+  url: 'https://rodica1234.github.io', // URL-ul site-ului, pentru dev poate fi localhost
+  baseUrl: '/my-erp-site/', // root path al site-ului
+  trailingSlash: false,
   favicon: 'img/favicon.ico',
-  organizationName: 'your-org', // GitHub org/user
-  projectName: 'my-erp-docs',   // Repo
+  organizationName: 'rodica1234', // GitHub org/user
+  projectName: 'my-erp-site',   // Repo
+  deploymentBranch: 'gh-pages',
   i18n: {
     defaultLocale: 'it',
     locales: ['it', 'en', 'fr', 'ro'],
