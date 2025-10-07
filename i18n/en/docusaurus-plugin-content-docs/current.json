@@ -1,0 +1,22 @@
+{
+  "version.label": {
+    "message": "Next",
+    "description": "The label for version current"
+  },
+  "sidebar.docs.category.Contabilità": {
+    "message": "Accounting",
+    "description": "The label for category Contabilità in sidebar docs"
+  },
+  "sidebar.docs.category.Specifico": {
+    "message": "Specific",
+    "description": "The label for category Specifico in sidebar docs"
+  },
+  "sidebar.docs.category.Italia": {
+    "message": "Italy",
+    "description": "The label for category Italia in sidebar docs"
+  },
+  "sidebar.docs.category.Svizzera": {
+    "message": "Switzerland",
+    "description": "The label for category Svizzera in sidebar docs"
+  }
+}
