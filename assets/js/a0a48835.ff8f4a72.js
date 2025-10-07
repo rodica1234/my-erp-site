@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkmy_erp_site=self.webpackChunkmy_erp_site||[]).push([[8547],{2963:e=>{e.exports=JSON.parse('{"metadata":{"permalink":"/my-erp-site/blog","page":1,"postsPerPage":10,"totalPages":1,"totalCount":4,"blogDescription":"Blog","blogTitle":"Blog"}}')}}]);
