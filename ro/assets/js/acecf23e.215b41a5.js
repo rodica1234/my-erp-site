@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkmy_erp_site=self.webpackChunkmy_erp_site||[]).push([[1903],{1912:e=>{e.exports=JSON.parse('{"blogBasePath":"/my-erp-site/ro/blog","blogTitle":"Blog","authorsListPath":"/my-erp-site/ro/blog/authors"}')}}]);
