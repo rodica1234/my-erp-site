@@ -2,9 +2,13 @@
   "name": "my-erp-site",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "docusaurus start",
+  "classify:seo": "node scripts/classify-seo-ai.js",
+  "sync-dict": "node scripts/sync-dict.js",
+  "optimize:docs": "node scripts/optimize-docs.js",
     "build": "docusaurus build",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
@@ -19,9 +23,12 @@
     "@mdx-js/react": "^3.0.0",
     "clsx": "^2.0.0",
     "docusaurus-plugin-search-local": "^2.1.2",
+    "fs": "^0.0.1-security",
+    "path": "^0.12.7",
     "prism-react-renderer": "^2.3.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.9.1",
