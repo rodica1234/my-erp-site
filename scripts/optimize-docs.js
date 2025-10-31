@@ -1,13 +1,10 @@
 #!/usr/bin/env node
-
 /**
- * Ottimizza i file Markdown di Docusaurus per SEO/AI:
- * - Aggiunge o aggiorna metadati (title, description, keywords)
- * - Normalizza la terminologia ERP usando il dizionario
- * - Evidenzia le traduzioni mancanti con **grassetto** + testo sorgente italiano tra parentesi
- * - Supporta --dry-run per mostrare i cambiamenti senza salvarli
- * - Supporta --file per ottimizzare un singolo file
- * - Supporta --folder e --lang per lavorare per moduli e lingue
+ * 🌍 Traducere automată + optimizare Docusaurus Markdown
+ * - Traduce conținut și frontmatter (MyMemory API)
+ * - Sparge textul și frontmatter-ul în blocuri mici (~300 caractere)
+ * - Acceptă parametri: --folder, --file, --lang, --dry-run
+ * - Adaugă autoTranslated: true în frontmatter
  */
 
 import fs from "fs";
@@ -15,15 +12,17 @@ import path from "path";
 import matter from "gray-matter";
 import { parseArgs } from "node:util";
 import { fileURLToPath } from "url";
+import fetch from "node-fetch";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// --- Config ---
 const DOCS_PATH = "docs";
 const I18_PATH = "i18n";
 const DICTIONARY_PATH = "scripts/erp-dictionary.json";
+const LOG_FILE = "translation-log.txt";
 
+// CLI args
 const { values: args } = parseArgs({
   options: {
     file: { type: "string" },
@@ -38,7 +37,7 @@ const TARGET_FOLDER = args.folder || "";
 const TARGET_LANG = args.lang;
 const DRY_RUN = args.dryRun;
 
-// --- Utils ---
+// --- Utilities ---
 function readMarkdownFiles(dir) {
   let results = [];
   if (!fs.existsSync(dir)) return results;
@@ -51,10 +50,7 @@ function readMarkdownFiles(dir) {
 }
 
 function loadDictionary() {
-  if (!fs.existsSync(DICTIONARY_PATH)) {
-    console.warn("⚠️ Dizionario ERP non trovato:", DICTIONARY_PATH);
-    return [];
-  }
+  if (!fs.existsSync(DICTIONARY_PATH)) return [];
   return JSON.parse(fs.readFileSync(DICTIONARY_PATH, "utf8"));
 }
 
@@ -62,78 +58,136 @@ function normalizeTextWithDictionary(text, dict, lang) {
   let updated = text;
   for (const row of dict) {
     const it = row.Italiano?.trim();
-    const target =
-      lang === "en"
-        ? row.English?.trim()
-        : lang === "ro"
-        ? row.Romanian?.trim()
-        : null;
+    const target = row.Romanian?.trim();
     if (!it || !target) continue;
-
-    // regex per sostituzione "sicura"
     const regex = new RegExp(`\\b${it}\\b`, "gi");
     updated = updated.replace(regex, target);
   }
   return updated;
 }
 
-function autoTranslateMissingTerms(text, lang, dict) {
-  // traduzioni approssimative per termini non nel dizionario
-  // (qui puoi integrare un servizio o una libreria di traduzione)
-  return text.replace(/\*\*(.*?)\*\*/g, (_, term) => {
-    return `**${term}** (${term})`;
-  });
+// --- Split text in small blocks (~300 chars) ---
+function splitTextBlocks(text, maxLength = 300) {
+  const blocks = [];
+  let current = "";
+  const lines = text.split("\n");
+  for (const line of lines) {
+    if ((current + "\n" + line).length > maxLength) {
+      if (current.trim()) blocks.push(current);
+      current = line;
+    } else {
+      current += (current ? "\n" : "") + line;
+    }
+  }
+  if (current.trim()) blocks.push(current);
+  return blocks;
 }
 
-// --- Main optimizer ---
-function optimizeMarkdown(filePath, dict, lang) {
+// --- Translate block with MyMemory ---
+async function translateTextMyMemory(text, targetLang = "ro") {
+  if (!text.trim()) return text;
+  try {
+    const url =
+      "https://api.mymemory.translated.net/get?q=" +
+      encodeURIComponent(text) +
+      "&langpair=it|" +
+      targetLang;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data?.responseData?.translatedText) return data.responseData.translatedText;
+    return `[UNTRANSLATED → ${targetLang.toUpperCase()}]\n\n${text}`;
+  } catch (err) {
+    console.warn("⚠️ Errore traduzione:", err.message);
+    return `[UNTRANSLATED → ${targetLang.toUpperCase()}]\n\n${text}`;
+  }
+}
+
+// --- Translate frontmatter values ---
+async function translateFrontmatter(data, lang) {
+  const newData = { ...data };
+  for (const key of ["title", "description"]) {
+    if (data[key]) {
+      const blocks = splitTextBlocks(data[key], 200);
+      let translated = "";
+      for (const b of blocks) {
+        translated += await translateTextMyMemory(b, lang);
+      }
+      newData[key] = translated;
+    }
+  }
+  // keywords: translate each keyword separately
+  if (data.keywords && Array.isArray(data.keywords)) {
+    const translatedKeywords = [];
+    for (const kw of data.keywords) {
+      const t = await translateTextMyMemory(kw, lang);
+      translatedKeywords.push(t);
+    }
+    newData.keywords = translatedKeywords;
+  }
+  return newData;
+}
+
+// --- Main optimize function ---
+async function optimizeMarkdown(filePath, dict, lang) {
   const original = fs.readFileSync(filePath, "utf8");
   const { data, content } = matter(original);
 
-  const title = data.title || path.basename(filePath, ".md").replace(/-/g, " ");
-  const description =
-    data.description ||
-    `Guida ${lang ? lang.toUpperCase() : "IT"} per ${title}`;
-  const keywords = data.keywords || [title.split(" ")[0], "ERP", "Fluentis"];
+  // Skip if already translated
+  if (data.autoTranslated) return { newFile: original, original };
 
-  // normalizza la terminologia
-  let updatedContent = normalizeTextWithDictionary(content, dict, lang);
+  let translatedContent = content;
+  let newFrontmatter = { ...data };
 
-  // evidenzia termini mancanti
-  updatedContent = autoTranslateMissingTerms(updatedContent, lang, dict);
+  if (lang && lang !== "it") {
+    console.log(`🌐 Traducendo ${filePath} in ${lang.toUpperCase()}...`);
 
-  const newFrontmatter = {
-    ...data,
-    title,
-    description,
-    keywords,
-  };
+    // Translate content in blocks
+    const blocks = splitTextBlocks(content, 300);
+    const translatedBlocks = [];
+    for (const b of blocks) {
+      const t = await translateTextMyMemory(b, lang);
+      translatedBlocks.push(t);
+    }
+    translatedContent = translatedBlocks.join("\n\n");
 
-  const newFile = matter.stringify(updatedContent, newFrontmatter);
+    // Translate frontmatter
+    newFrontmatter = await translateFrontmatter(newFrontmatter, lang);
+  }
 
+  // Normalize ERP terms
+  translatedContent = normalizeTextWithDictionary(translatedContent, dict, lang);
+
+  // Mark as autoTranslated
+  newFrontmatter.autoTranslated = lang && lang !== "it" ? true : false;
+
+  const newFile = matter.stringify(translatedContent, newFrontmatter);
   return { newFile, original };
 }
 
 // --- MAIN ---
 (async () => {
   const dict = loadDictionary();
-
   let targets = [];
 
   if (TARGET_FILE) {
     targets = [TARGET_FILE];
   } else {
-    // lingua sorgente o target
     const roots = [];
+
     if (!TARGET_LANG || TARGET_LANG === "it")
       roots.push(path.join(DOCS_PATH, TARGET_FOLDER));
+
     if (TARGET_LANG)
-      roots.push(path.join(I18_PATH, TARGET_LANG, TARGET_FOLDER));
-    else if (fs.existsSync(I18_PATH)) {
-      for (const lang of fs.readdirSync(I18_PATH)) {
-        roots.push(path.join(I18_PATH, lang, TARGET_FOLDER));
-      }
-    }
+      roots.push(
+        path.join(
+          I18_PATH,
+          TARGET_LANG,
+          "docusaurus-plugin-content-docs",
+          "current",
+          TARGET_FOLDER
+        )
+      );
+
     for (const root of roots) {
       targets = targets.concat(readMarkdownFiles(root));
     }
@@ -144,29 +198,26 @@ function optimizeMarkdown(filePath, dict, lang) {
     process.exit(0);
   }
 
+  if (!DRY_RUN) fs.writeFileSync(LOG_FILE, "", "utf8");
+
   console.log(
-    `🚀 Ottimizzazione avviata per ${targets.length} file ${
-      DRY_RUN ? "(modalità simulata --dry-run)" : ""
-    }`
+    `🚀 Traducere + optimizare pornită pentru ${targets.length} fișiere ${DRY_RUN ? "(dry-run)" : ""}`
   );
 
   for (const file of targets) {
-    const { newFile, original } = optimizeMarkdown(file, dict, TARGET_LANG);
+    const { newFile, original } = await optimizeMarkdown(file, dict, TARGET_LANG);
 
     if (newFile !== original) {
       if (DRY_RUN) {
-        console.log(`🟡 Anteprima modifiche: ${file}`);
-        console.log(
-          "--------------------------------------------\n" +
-            newFile.substring(0, 400) +
-            "\n--------------------------------------------"
-        );
+        console.log(`🟡 Preview: ${file}`);
+        console.log(newFile.substring(0, 300) + "\n----------------------------------");
       } else {
-        fs.writeFileSync(file, newFile);
-        console.log(`✅ File aggiornato: ${file}`);
+        fs.writeFileSync(file, newFile, "utf8");
+        console.log(`✅ Tradus și optimizat: ${file}`);
+        fs.appendFileSync(LOG_FILE, `${file}\n`, "utf8");
       }
     }
   }
 
-  console.log("🏁 Operazione completata.");
+  console.log("🏁 Traducere completă!");
 })();
