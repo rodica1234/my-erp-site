@@ -21,7 +21,7 @@ const __dirname = path.dirname(__filename);
 
 // --- Config ---
 const DOCS_PATH = "docs";
-const I18_PATH = "i18";
+const I18_PATH = "i18n";
 const DICTIONARY_PATH = "scripts/erp-dictionary.json";
 
 const { values: args } = parseArgs({
@@ -128,10 +128,10 @@ function optimizeMarkdown(filePath, dict, lang) {
     if (!TARGET_LANG || TARGET_LANG === "it")
       roots.push(path.join(DOCS_PATH, TARGET_FOLDER));
     if (TARGET_LANG)
-      roots.push(path.join(I18_PATH, TARGET_LANG, "docs", TARGET_FOLDER));
+      roots.push(path.join(I18_PATH, TARGET_LANG, TARGET_FOLDER));
     else if (fs.existsSync(I18_PATH)) {
       for (const lang of fs.readdirSync(I18_PATH)) {
-        roots.push(path.join(I18_PATH, lang, "docs", TARGET_FOLDER));
+        roots.push(path.join(I18_PATH, lang, TARGET_FOLDER));
       }
     }
     for (const root of roots) {
