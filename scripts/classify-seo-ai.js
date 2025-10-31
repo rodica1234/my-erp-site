@@ -1,165 +1,70 @@
-#!/usr/bin/env node
-
 /**
- * Classificazione SEO/AI per file Markdown di Docusaurus.
- * Analizza docs/ e i18/ e genera un report CSV con priorità.
- *
- * Uso:
- *   node scripts/classify-seo-ai.js
- *   node scripts/classify-seo-ai.js --lang=ro
- *   node scripts/classify-seo-ai.js --folder=produzione
+ * optimize-docs.js
+ * 
+ * Traducător automat pentru documentația ERP (IT -> RO)
+ * Folosește fișierul 'erp-dictionary.json' pentru a traduce textul din documente Markdown.
+ * 
+ * Utilizare:
+ *   node optimize-docs.js
  */
 
-import fs from "fs";
-import path from "path";
-import matter from "gray-matter";
-import { fileURLToPath } from "url";
-import { marked } from "marked";
-import { parseArgs } from "node:util";
+import fs from 'fs';
+import path from 'path';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// === CONFIG ===
+const DICTIONARY_PATH = 'C:\\Users\\Rodica\\Documents\\my-erp-demo\\my-erp-site\\erp-dictionary.json';
+const SOURCE_PATH = path.resolve('docs/logistics/items/stocks-visualization.md');
+const TARGET_PATH = path.resolve('i18n/ro/docusaurus-plugin-content-docs/current/logistics/items/stocks-visualization.md');
 
-// ---- Config ----
-const DOCS_PATH = "docs";
-const I18_PATH = "i18";
-const OUTPUT_DIR = "reports";
-if (!fs.existsSync(OUTPUT_DIR)) fs.mkdirSync(OUTPUT_DIR);
-
-const { values: args } = parseArgs({
-  options: {
-    folder: { type: "string" },
-    lang: { type: "string" },
-  },
-});
-
-const TARGET_FOLDER = args.folder || "";
-const TARGET_LANG = args.lang || null;
-
-// ---- Helper functions ----
-function readMarkdownFiles(dir) {
-  let results = [];
-  if (!fs.existsSync(dir)) return results;
-
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    const res = path.resolve(dir, entry.name);
-    if (entry.isDirectory()) {
-      results = results.concat(readMarkdownFiles(res));
-    } else if (entry.name.endsWith(".md")) {
-      results.push(res);
-    }
+function loadDictionary() {
+  if (!fs.existsSync(DICTIONARY_PATH)) {
+    console.error(`❌ Dicționarul nu a fost găsit la: ${DICTIONARY_PATH}`);
+    process.exit(1);
   }
-  return results;
+  try {
+    const raw = fs.readFileSync(DICTIONARY_PATH, 'utf-8');
+    const data = JSON.parse(raw);
+    if (!Array.isArray(data)) throw new Error('Format invalid — trebuie să fie un array cu "it" și "ro".');
+    const dict = data.filter(e => e.it && e.ro).map(e => ({ it: e.it.trim(), ro: e.ro.trim() }));
+    console.log(`📘 Dicționar încărcat (${dict.length} termeni)`);
+    return dict;
+  } catch (err) {
+    console.error('❌ Eroare la citirea dicționarului:', err.message);
+    process.exit(1);
+  }
 }
 
-function analyzeMarkdown(content, filePath) {
-  const { data, content: body } = matter(content);
-  const tokens = marked.lexer(body);
-
-  const headings = tokens.filter(t => t.type === "heading").length;
-  const links = tokens.filter(t => t.type === "link").length;
-  const wordCount = body.split(/\s+/).length;
-
-  const hasTitle = !!data.title;
-  const hasDesc = !!data.description;
-  const hasKeywords = !!data.keywords;
-
-  let score = 0;
-  if (hasTitle) score += 20;
-  if (hasDesc) score += 20;
-  if (hasKeywords) score += 20;
-  if (headings > 2) score += 10;
-  if (links > 3) score += 10;
-  if (wordCount > 300) score += 20;
-
-  let priority =
-    score >= 80 ? "Alta" : score >= 50 ? "Media" : "Bassa";
-
-  return {
-    file: filePath,
-    title: data.title || "(manca)",
-    description: data.description ? "✅" : "❌",
-    keywords: data.keywords ? "✅" : "❌",
-    headings,
-    links,
-    words: wordCount,
-    score,
-    priority,
-  };
+function escapeRegExp(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-function toCSV(data) {
-  const headers = [
-    "file",
-    "title",
-    "description",
-    "keywords",
-    "headings",
-    "links",
-    "words",
-    "score",
-    "priority",
-  ];
-  const lines = [headers.join(",")];
-  data.forEach(row =>
-    lines.push(
-      headers.map(h => JSON.stringify(row[h] ?? "")).join(",")
-    )
-  );
-  return lines.join("\n");
+function translateText(text, dictionary) {
+  let translated = text;
+  let count = 0;
+  for (const { it, ro } of dictionary) {
+    const pattern = new RegExp(`\\b${escapeRegExp(it)}\\b`, 'gi');
+    const before = translated;
+    translated = translated.replace(pattern, ro);
+    if (before !== translated) count++;
+  }
+  console.log(`📝 Termeni traduşi: ${count}`);
+  return translated;
 }
 
-// ---- MAIN ----
-(async () => {
-  console.log("📊 Analisi SEO/AI in corso...");
-
-  const targets = [];
-
-  // lingua sorgente
-  if (!TARGET_LANG || TARGET_LANG === "it") {
-    const docsRoot = path.join(DOCS_PATH, TARGET_FOLDER);
-    targets.push(...readMarkdownFiles(docsRoot));
+function main() {
+  if (!fs.existsSync(SOURCE_PATH)) {
+    console.error(`❌ Fișierul sursă nu există: ${SOURCE_PATH}`);
+    process.exit(1);
   }
 
-  // lingue localizzate
-  if (TARGET_LANG) {
-    const i18Docs = path.join(I18_PATH, TARGET_LANG, "docs", TARGET_FOLDER);
-    targets.push(...readMarkdownFiles(i18Docs));
-  } else {
-    if (fs.existsSync(I18_PATH)) {
-      const langs = fs.readdirSync(I18_PATH);
-      for (const lang of langs) {
-        const langPath = path.join(I18_PATH, lang, "docs", TARGET_FOLDER);
-        targets.push(...readMarkdownFiles(langPath));
-      }
-    }
-  }
+  const dictionary = loadDictionary();
+  const inputText = fs.readFileSync(SOURCE_PATH, 'utf-8');
+  const translated = translateText(inputText, dictionary);
 
-  if (!targets.length) {
-    console.log("❌ Nessun file trovato per la ricerca specificata.");
-    process.exit(0);
-  }
+  fs.mkdirSync(path.dirname(TARGET_PATH), { recursive: true });
+  fs.writeFileSync(TARGET_PATH, translated, 'utf-8');
 
-  const results = targets.map(file => {
-    const content = fs.readFileSync(file, "utf8");
-    return analyzeMarkdown(content, file);
-  });
+  console.log(`✅ Traducerea a fost salvată în:\n   ${TARGET_PATH}`);
+}
 
-  const csv = toCSV(results);
-  const now = new Date().toISOString().split("T")[0];
-  const fileName = `${OUTPUT_DIR}/seo-ai-classification-${now}.csv`;
-
-  fs.writeFileSync(fileName, csv);
-  console.log(`✅ Report generato: ${fileName}`);
-
-  const summary = results.reduce(
-    (acc, r) => {
-      acc[r.priority]++;
-      return acc;
-    },
-    { Alta: 0, Media: 0, Bassa: 0 }
-  );
-
-  console.log("\n📈 Sommario:");
-  console.table(summary);
-})();
+main();
