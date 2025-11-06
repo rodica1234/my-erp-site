@@ -1,0 +1,84 @@
+{
+  "name": "my-erp-site",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "docusaurus": "docusaurus",
+    "start": "docusaurus start",
+    "classify:seo": "node scripts/classify-seo-ai.js",
+    "sync-dict": "node scripts/sync-dict.js",
+    "optimize:docs": "node scripts/optimize-docs.js",
+    "optimize:folder": "node scripts/optimize-folder.js",
+    "optimize:file": "node scripts/optimize-file.mjs",
+    "optimize:one": "node scripts/optimize-doc-seo.cjs",
+    "optimize:local": "node scripts/optimize-local.cjs",
+    "build": "docusaurus build",
+    "swizzle": "docusaurus swizzle",
+    "deploy": "docusaurus deploy",
+    "clear": "docusaurus clear",
+    "serve": "docusaurus serve",
+    "write-translations": "docusaurus write-translations",
+    "write-heading-ids": "docusaurus write-heading-ids"
+  },
+  "dependencies": {
+    "@docusaurus/core": "3.9.1",
+    "@docusaurus/preset-classic": "3.9.1",
+    "@mdx-js/react": "^3.0.0",
+    "chalk": "^4.1.2",
+    "clsx": "^2.0.0",
+    "docusaurus-plugin-search-local": "^2.1.2",
+    "fs": "^0.0.1-security",
+    "fs-extra": "^11.3.2",
+    "glob": "^11.0.3",
+    "gray-matter": "^4.0.3",
+    "inquirer": "^8.2.7",
+    "js-yaml": "^4.1.0",
+    "path": "^0.12.7",
+    "prism-react-renderer": "^2.3.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "remark-frontmatter": "^5.0.0",
+    "remark-gfm": "^4.0.1",
+    "remark-parse": "^11.0.0",
+    "remark-stringify": "^11.0.0",
+    "slugify": "^1.6.6",
+    "unified": "^11.0.5",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@docusaurus/module-type-aliases": "3.9.1",
+    "@docusaurus/types": "3.9.1"
+  },
+  "browserslist": {
+    "production": [
+      ">0.5%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 3 chrome version",
+      "last 3 firefox version",
+      "last 5 safari version"
+    ]
+  },
+  "engines": {
+    "node": ">=20.0"
+  },
+  "description": "This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.",
+  "main": "docusaurus.config.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rodica1234/my-erp-site.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rodica1234/my-erp-site/issues"
+  },
+  "homepage": "https://github.com/rodica1234/my-erp-site#readme"
+}
