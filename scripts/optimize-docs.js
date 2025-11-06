@@ -1,11 +1,17 @@
 // scripts/optimize-docs.js
-import fs from "fs-extra";
+
 import matter from "gray-matter";
 import fg from "fast-glob";
 import chalk from "chalk";
+import fs from "fs";
+const erpDict = JSON.parse(fs.readFileSync(new URL("./erp-dictionary.json", import.meta.url), "utf-8"));
 
-const DOCS_DIRS = ["docs", "i18"]; // cartelle da analizzare
+
+const DOCS_DIRS = ["docs", "i18"];
 const ERP_NAME = "ERPName"; // cambia con il nome del tuo ERP
+
+// Legge se l'utente ha passato il flag --dry-run
+const isDryRun = process.argv.includes("--dry-run");
 
 function classifyPriority(filepath, content) {
   const lower = content.toLowerCase();
@@ -28,20 +34,30 @@ function generateMetadata(file, content) {
 
   const description = `Guida: ${shortTitle} in ${ERP_NAME}. Scopri come usare questa funzione passo per passo.`;
 
-  const keywords = Array.from(
-    new Set(
-      content
-        .toLowerCase()
-        .match(/\b[a-zàèéìòù0-9]{5,}\b/g)
-        ?.slice(0, 15) || []
-    )
-  );
+  // ✳️ Estrazione con dizionario ERP
+  const text = content.toLowerCase();
+  const relevant = erpDict.keywords.filter(k => text.includes(k.toLowerCase()));
+
+  // Se non trova nulla, fallback con estrazione automatica
+  const fallback =
+    content
+      .toLowerCase()
+      .match(/\b[a-zàèéìòù0-9]{5,}\b/g)
+      ?.slice(0, 10) || [];
+
+  const keywords = relevant.length ? relevant : fallback;
 
   return { title: shortTitle, description, keywords };
 }
 
 async function optimizeDocs() {
-  console.log(chalk.cyan("🧠 Ottimizzazione automatica dei file Markdown ERP...\n"));
+  console.log(
+    chalk.cyan(
+      `🧠 Ottimizzazione ERP Docs con dizionario specifico... ${
+        isDryRun ? chalk.yellow("(modalità DRY-RUN)") : ""
+      }\n`
+    )
+  );
 
   const files = await fg(DOCS_DIRS.map(dir => `${dir}/**/*.md`));
   let updated = 0;
@@ -53,31 +69,44 @@ async function optimizeDocs() {
     const priority = classifyPriority(file, parsed.content);
     let changed = false;
 
+    const metadata = generateMetadata(file, parsed.content);
+
+    const changes = {};
     if (!parsed.data.title) {
-      parsed.data.title = generateMetadata(file, parsed.content).title;
+      changes.title = metadata.title;
       changed = true;
     }
     if (!parsed.data.description) {
-      parsed.data.description = generateMetadata(file, parsed.content).description;
+      changes.description = metadata.description;
       changed = true;
     }
     if (!parsed.data.keywords) {
-      parsed.data.keywords = generateMetadata(file, parsed.content).keywords;
+      changes.keywords = metadata.keywords;
       changed = true;
     }
 
     if (changed) {
-      const newFile = matter.stringify(parsed.content, parsed.data);
-      await fs.writeFile(file, newFile);
-      console.log(chalk.green(`✅ Aggiornato: ${file}`));
       updated++;
+      if (isDryRun) {
+        console.log(chalk.yellow(`🧩 [DRY-RUN] Modificherei ${file}:`));
+        console.log(chalk.gray(JSON.stringify(changes, null, 2)));
+      } else {
+        // Scrive effettivamente i cambiamenti
+        const newFile = matter.stringify(parsed.content, { ...parsed.data, ...changes });
+        await fs.writeFile(file, newFile);
+        console.log(chalk.green(`✅ Aggiornato: ${file}`));
+      }
     } else {
       skipped++;
     }
   }
 
   console.log(chalk.yellow(`\n📊 Totale file analizzati: ${files.length}`));
-  console.log(chalk.green(`✅ File aggiornati: ${updated}`));
+  console.log(
+    isDryRun
+      ? chalk.blue(`🔍 File che verrebbero aggiornati: ${updated}`)
+      : chalk.green(`✅ File aggiornati: ${updated}`)
+  );
   console.log(chalk.gray(`⏭️  File già completi: ${skipped}`));
 }
 

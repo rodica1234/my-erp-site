@@ -1,77 +1,134 @@
 ---
 title: Visualizzazione giacenze
+description: Guida completa alla visualizzazione delle giacenze di magazzino in Fluentis ERP, con dettagli su filtri, raggruppamenti, generazione registrazioni e azzeramento giacenze.
+keywords: giacenze, magazzino, Fluentis ERP, gestione magazzino, registrazioni magazzino, ubicazioni, lotti, commesse produzione
+schema: TechArticle
+tags: [ERP, Magazzino, Fluentis, Logistica, Giacenze]
+sidebar_label: Visualizzazione giacenze
 sidebar_position: 2
+last_update: 05-11-2025
+author: "Fluentis Team"
+date: 05-11-2025
+related: 
+  - /docs/logistics/warehouse/item-location-map
+summary: Panoramica e guida operativa per la gestione delle giacenze di magazzino in Fluentis ERP, con focus su raggruppamenti, filtri e generazione di registrazioni.
+image: /images/docs/visualizzazione-giacenze.png
+canonical_url: /docs/logistics/warehouse/stock-visualization
 ---
 
-:::important A cosa serve
-L'introduzione alla visualizzazione delle giacenze di Fluentis costituisce un elemento fondamentale per una gestione efficiente del magazzino. Questa funzionalità consente agli operatori di estrapolare in modo semplice e pratico le giacenze di magazzino, permettendo di monitorare e confrontare la giacenza fisica con quella logica.
 
-La visualizzazione delle giacenze offre la possibilità di raggruppare i dati per articolo, fornendo anche un dettaglio per magazzino. Ciò significa che è possibile visualizzare più righe dello stesso articolo, qualora questo fosse presente in magazzini diversi. Inoltre, l'operatore ha la possibilità di filtrare i dati per ubicazione, progetto, cliente/fornitore o lotto, fornendo così una panoramica completa e dettagliata delle giacenze in relazione ai diversi contesti di utilizzo.
+# Visualizzazione giacenze
 
-Nel tab di dettaglio, ulteriori informazioni sui movimenti di magazzino sono accessibili, e da questo stesso tab è possibile generare registrazioni di magazzino per uno o più articoli, quando appartenenti allo stesso magazzino. Questa flessibilità permette un’efficace operatività, rendendo Fluentis uno strumento potente per la gestione delle risorse logistiche
+:::important
+A cosa serve  
+L'introduzione alla visualizzazione delle giacenze<!--visualizzazione giacenze--> di Fluentis ERP<!--Fluentis ERP--> costituisce un elemento fondamentale per una gestione efficiente del magazzino<!--magazzino-->. Questa funzionalità consente agli operatori di estrapolare facilmente le giacenze<!--giacenze-->, monitorare e confrontare la giacenza fisica con quella logica, raggruppare i dati per articolo<!--articolo-->, magazzino<!--magazzino--> o altri criteri e generare registrazioni<!--registrazioni--> di magazzino<!--magazzino--> quando necessario.
 :::
 
-La form consente all'operatore di estrapolare facilmente le giacenze di magazzino per controllare il magazzino e la corrispondenza tra giacenza fisica e logica.
-
-Attraverso i filtri è possibile fare una ricerca mirata secondo i parametri e visualizzare il risultato dell'interrogazione nelle griglie dei risultati. Tali risultati possono essere raggruppati per vari parametri per facilitare la lettura dei dati. Dalla finestra è inoltre possibile inserire in modo veloce alcune registrazioni di magazzino.
-
-I risultati della ricerca sono suddivisi in diversi tab:
+La form<!--form--> consente all'operatore di estrapolare facilmente le giacenze<!--giacenze--> di magazzino<!--magazzino--> per controllare il magazzino<!--magazzino--> e la corrispondenza tra giacenza fisica e logica. Attraverso i filtri è possibile effettuare ricerche mirate secondo vari parametri e visualizzare i risultati nelle griglie dedicate. I risultati possono essere raggruppati per facilitare la lettura dei dati. Dalla finestra è inoltre possibile inserire rapidamente registrazioni<!--registrazioni--> di magazzino<!--magazzino-->.
 
 ## Articolo
-
-I risultati vengono raggruppati per articolo e vengono specificati i valori di classe, codice articolo, descrizione, seconda descrizione, variante (eventuale), descrizione variante (eventuale), quantità e unità di misura.
+I risultati vengono raggruppati per articolo<!--articolo--> e comprendono i seguenti valori:
+- Classe
+- Codice articolo
+- Descrizione
+- Seconda descrizione
+- Variante (eventuale)
+- Descrizione variante (eventuale)
+- Quantità
+- Unità di misura
 
 ## Magazzino
-
-I risultati vengono raggruppati per magazzino e vengono specificati, oltre ai valori del tab articolo, anche i valori di magazzino e descrizione magazzino.
+I risultati vengono raggruppati per magazzino<!--magazzino--> e includono, oltre ai valori del tab articolo<!--articolo-->:
+- Magazzino<!--magazzino-->
+- Descrizione magazzino<!--magazzino-->
 
 ## Ubicazione
-
-I risultati vengono raggruppati per ubicazione e vengono specificati, oltre ai valori del tab articolo, anche i valori di ubicazione, descrizione ubicazione e stato ubicazione.
-
+I risultati vengono raggruppati per ubicazione<!--ubicazione--> e includono, oltre ai valori del tab articolo<!--articolo-->:
+- Ubicazione<!--ubicazione-->
+- Descrizione ubicazione<!--ubicazione-->
+- Stato ubicazione<!--ubicazione-->
 
 ## Progetti
-
-I risultati vengono raggruppati per progetto e vengono specificati, oltre ai valori del tab articolo, anche i valori di numero, anno e descrizione articolo progetto.
+I risultati vengono raggruppati per progetto<!--progetto--> e includono, oltre ai valori del tab articolo<!--articolo-->:
+- Numero progetto<!--progetto-->
+- Anno progetto<!--progetto-->
+- Descrizione progetto<!--progetto-->
 
 ## Cliente/Fornitore
-
-I risultati vengono raggruppati per cliente/fornitore (presenti nelle registrazioni di magazzino) e vengono specificati, oltre ai valori del tab articolo, anche i valori del cliente/fornitore.
+I risultati vengono raggruppati per cliente/fornitore<!--cliente/fornitore--> (presenti nelle registrazioni<!--registrazioni--> di magazzino<!--magazzino-->) e comprendono:
+- Cliente/Fornitore<!--cliente/fornitore-->
+- Altri valori del tab articolo<!--articolo-->
 
 ## Lotto
-
-Se ci sono articoli gestiti a lotti i risultati vengono raggruppati per lotto e vengono specificati, oltre ai valori del tab articolo, anche i valori di magazzino, lotto e quantità disponibile.
+Per articoli<!--articolo--> gestiti a lotti<!--lotti-->, i risultati vengono raggruppati per lotto<!--lotti--> e includono:
+- Magazzino<!--magazzino-->
+- Lotto<!--lotti-->
+- Quantità disponibile
+- Altri valori del tab articolo<!--articolo-->
 
 ## Commessa produzione
-
-I risultati vengono raggruppati per commessa di produzione e vengono specificati, oltre ai valori del tab articolo, anche i valori di magazzino, descrizione magazzino, ubicazione, numero commessa di produzione e anno commessa di produzione.
+I risultati vengono raggruppati per commessa di produzione<!--commessa di produzione--> e includono:
+- Magazzino<!--magazzino-->
+- Descrizione magazzino<!--magazzino-->
+- Ubicazione<!--ubicazione-->
+- Numero commessa di produzione<!--commessa di produzione-->
+- Anno commessa di produzione<!--commessa di produzione-->
+- Altri valori del tab articolo<!--articolo-->
 
 ## Dettaglio
-
-È il dettaglio massimo dei risultati raggruppato per tutti i tab precedenti. Vengono specificati i valori di classe, codice articolo, descrizione articolo, seconda descrizione articolo, variante, descrizione variante, opzione, descrizione opzione, magazzino, ubicazione, numero commessa, anno commessa, descrizione cliente/fornitore, lotto, quantità disponibile, quantità giacenza, unità di misura e stato dell'ubicazione.
+Il tab Dettaglio<!--tab Dettaglio--> fornisce il livello massimo di dettaglio dei risultati, comprendendo:
+- Classe
+- Codice articolo
+- Descrizione articolo
+- Seconda descrizione articolo
+- Variante
+- Descrizione variante
+- Opzione
+- Descrizione opzione
+- Magazzino<!--magazzino-->
+- Ubicazione<!--ubicazione-->
+- Numero commessa<!--commessa-->
+- Anno commessa<!--commessa-->
+- Descrizione cliente/fornitore<!--cliente/fornitore-->
+- Lotto<!--lotti-->
+- Quantità disponibile
+- Quantità giacenza<!--giacenza-->
+- Unità di misura
+- Stato dell'ubicazione<!--ubicazione-->
 
 ### Generazione registrazioni
+Nel tab Dettaglio<!--tab Dettaglio-->, è possibile utilizzare il pulsante Generazione registrazioni<!--pulsante Generazione registrazioni--> per creare registrazioni<!--registrazioni--> di magazzino<!--magazzino-->.
 
-Nel tab **Dettaglio** della giacenza articolo è possibile utilizzare il pulsante **Generazione registrazioni** per inserire delle registrazioni di magazzino.
-
-*Procedimento*:
-
-- selezionare un *Articolo* sulla griglia di risultato, 
-- scegliere un *Magazzino* sui filtri 
-- impostare la visualizzazione giacenze con flag su visualizza **Giacenza** *Positiva* o *Negativa* a seconda che si voglia creare una registrazione di *scarico* o di *carico*,
-- premere il pulsante *Generazione registrazioni*, il quale aprirà la form *Movimentazione* dove è necessario inserire i valori di *Causale*, *Quantità*, *Data registrazione* ed eventualmente *Ubicazione*. Le causali di magazzino presenti nella combo sono di tipo *Carico* se è attivo il flag di visualizzazione giacenze *Negative* e di *Scarico* se è attivo il flag di visualizzazione giacenze *Positive*.
-- una volta terminato l'inserimento dei campi nella form *Movimentazione*, premendo il pulsante *OK* verrà aperta la *Registrazione* appena creata per poter apportare eventuali modifiche e la maschera di *Visualizzazione giacenze* sarà già aggiornata in base alla registrazione inserita.   
-
-Quando si insersce nella form *Movimentazione* una causale con contropartita questa sarà proposta nel campo **Causale CPT** con la sua **Ubicazione**, se codificata nella tabella della causale.    
-Se l'*Ubicazione* viene cancellata verrà inserita nella registrazione quella codificata nella [Mappa ubicazioni per articolo](/docs/logistics/warehouse/location/item-location-map), se presente, altrimenti il campo resterà vuoto.
+**Procedimento**:
+1. Selezionare un Articolo<!--articolo--> nella griglia dei risultati.
+2. Scegliere un Magazzino<!--magazzino--> tramite i filtri.
+3. Impostare la visualizzazione giacenze<!--visualizzazione giacenze--> su Positiva<!--flag Positiva--> o Negativa<!--flag Negativa-->, a seconda che si voglia creare una registrazione di scarico o carico.
+4. Premere Generazione registrazioni<!--pulsante Generazione registrazioni-->, aprendo la form Movimentazione<!--form Movimentazione-->.
+5. Inserire i valori di:
+   - Causale<!--campo Causale-->
+   - Quantità
+   - Data registrazione
+   - Eventualmente Ubicazione<!--ubicazione-->
+6. Premere OK per creare la registrazione, che sarà visibile e modificabile immediatamente.
+   
+:::important
+Se la causale<!--campo Causale--> ha contropartita, questa verrà proposta nel campo Causale CPT<!--campo Causale--> con la relativa Ubicazione<!--ubicazione-->. Se l'ubicazione<!--ubicazione--> viene cancellata, il sistema utilizzerà quella codificata nella [Mappa ubicazioni per articolo](/docs/logistics/warehouse/location/item-location-map), se presente.
+:::
 
 ### Azzeramento giacenze
+Il tab Dettaglio<!--tab Dettaglio--> consente anche di azzerare massivamente le giacenze<!--azzeramento massivo giacenze--> , utile in caso di dati incoerenti o negativi.
 
-Nel tab **Dettaglio** è possibile azzerare in modo massivo le giacenze di magazzino. Solitamente questa funzione si utilizza nel caso siano presenti a sistema dei dati non coerenti di giacenze negative che si voglio azzerare.
+**Procedimento**:
+1. Scegliere un Magazzino<!--magazzino--> tramite i filtri.
+2. Impostare la visualizzazione giacenze<!--visualizzazione giacenze--> su Positiva<!--flag Positiva--> o Negativa<!--flag Negativa-->.
+3. Selezionare gli articoli<!--articolo--> da azzerare.
+4. Premere Generazione registrazioni<!--pulsante Generazione registrazioni--> .
+5. Nella form Movimentazioni<!--form Movimentazione-->, scegliere la causale<!--campo Causale--> e premere OK senza specificare quantità.  
 
-*Procedimento*:
-- scegliere un *Magazzino* sui filtri
-- impostare la visualizzazione giacenze con flag su visualizza **Giacenza** *Positiva* o *Negativa*. 
-- nel tab *Dettaglio* giacenza articolo selezionare tutti gli articoli da azzerare
-- premere il pulsante *Generazione registrazioni*, il quale aprirà la form *Movimentazioni* dalla quale scegliere la causale e, senza specificare la quantità, premere il pulsante OK.  
-In questo modo si noterà l'azzeramento delle giacenze degli articoli desiderati.
+In questo modo, le giacenze<!--giacenze--> selezionate saranno azzerate<!--azzeramento massivo giacenze-->.
+
+## Riepilogo
+- Fluentis ERP<!--Fluentis ERP--> consente una visualizzazione dettagliata delle giacenze<!--visualizzazione giacenze--> per articolo<!--articolo-->, magazzino<!--magazzino-->, ubicazione<!--ubicazione-->, progetto<!--progetto-->, cliente/fornitore<!--cliente/fornitore-->, lotto<!--lotti--> e commessa di produzione<!--commessa di produzione-->.
+- I filtri e i raggruppamenti permettono un'analisi mirata e precisa dei dati.
+- Dal tab Dettaglio<!--tab Dettaglio--> è possibile generare registrazioni<!--registrazioni--> e azzerare giacenze<!--azzeramento massivo giacenze--> in modo controllato.
+- Per approfondimenti su ubicazioni<!--ubicazione--> e contropartite, consultare la [Mappa ubicazioni per articolo](/docs/logistics/warehouse/location/item-location-map)<!--ubicazione-->.

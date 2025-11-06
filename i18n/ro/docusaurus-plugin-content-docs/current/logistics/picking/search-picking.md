@@ -5,9 +5,6 @@ sidebar_position: 2
 
 La form si apre tramite il percorso **Logistica > Picking**.
 
-import SearchForm from './../../import/sections/search-form.md'
-
-<SearchForm />
 
 *Pulsanti specifici*  
 **DDT**: esegue la procedura per creare il documento DDT partendo da un picking.  

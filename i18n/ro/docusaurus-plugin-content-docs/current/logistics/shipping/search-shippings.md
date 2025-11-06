@@ -9,9 +9,6 @@ La gestione delle **Spedizioni** in Fluentis permette di gestire e organizzare i
 
 Il modulo **Spedizioni** consente di gestire le spedizioni create.
 
-import SearchForm from './../../import/sections/search-form.md'
-
-<SearchForm />
 
 Per poter inserire una nuova [Spedizione](/docs/logistics/shipping/shippings) è necessario premere il pulsante **Nuovo**.
 
